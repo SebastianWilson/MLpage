@@ -14,7 +14,7 @@ We are using the Historical Stock Market Dataset to identify trends in "historic
 Datasets: https://www.kaggle.com/borismarjanovic/price-volume-data-for-all-us-stocks-etfs
 https://www.kaggle.com/timoboz/tesla-stock-data-from-2010-to-2020
 
-**Agglomerative Hierarchical Clustering**
+**Candlestick Analysis/Agglomerative Hierarchical Clustering**
 
 One of the primary means of candlestick analysis is finding candlestick patterns that lead to predictable outcomes. One of the hardest challenges is figuring out these patterns. We can look for many outcomes for each pattern: whether the market goes up, down, maintains direction, or inverts direction. We can also use candlesticks which represent different amounts of time. As well as look for seasonal trends for certain stocks. We can use agglomerative clustering to identify clusters of candlestick patterns which result in similar movements of the market. 
 To make an algorithm that can find them, we first need to represent the data in an organized and understandable manner. One of the primary ways is to take the opening, high, low, and closing (OHLC) price points for the day. A great way to represent this is to take the high, low and closing prices relative to the opening price. This reduces the number of inputs to 3 instead of 4 since we can ignore the opening price. We can also represent the position of one candle to another by comparing the midpoints of the high and low values for each day. The amount of candlesticks in each pattern can be a variable we can change with a range: n > 2. The last piece of information we need is the general trend of the market before and after the pattern which can be found by comparing the midpoints of n candlesticks before and after the pattern.
