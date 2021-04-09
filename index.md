@@ -153,22 +153,28 @@ And here are the clusters visualized when k=7.
 
 ![image](https://user-images.githubusercontent.com/82196613/114153702-9a665180-98ed-11eb-9561-35c6d060b844.png)
 
-Compare this to the clustering for k=5, 6, 8, and 8 respectively.
+Compare this to the clustering for k=5, 6, and 8 respectively.
 
 ![image](https://user-images.githubusercontent.com/82196613/114153753-a8b46d80-98ed-11eb-9e81-9c014e282696.png)
+*k=5*
 
 ![image](https://user-images.githubusercontent.com/82196613/114153787-b36f0280-98ed-11eb-9a8c-c19e2c8d6b6a.png)
+*k=6*
 
 ![image](https://user-images.githubusercontent.com/82196613/114153830-bec22e00-98ed-11eb-8f4e-5c44f2b5fdce.png)
+*k=8*
 
 Notice how much more the distinct the boundaries are between states clusters when comparing opening price to time. Since we speculated that opening price would be highly correlated with closing price, daily, high, and daily low, we only plotted opening price to proxy these other features. We can also observe how clusters appear when plotting volume.
 Shown below are visualizations for k=6, 7, and 8 respectively when plotting volume instead of opening price.
 
 ![image](https://user-images.githubusercontent.com/82196613/114153869-cd104a00-98ed-11eb-9e87-5b6632acae0a.png)
+*k=6*
 
 ![image](https://user-images.githubusercontent.com/82196613/114153908-d7cadf00-98ed-11eb-91c1-c9de374c65f5.png)
+*k=7*
 
 ![image](https://user-images.githubusercontent.com/82196613/114153950-e2857400-98ed-11eb-8537-b5c86349c111.png)
+*k=8*
 
 
 Once again, notice how sharp the boundaries between clusters are when k=7.
