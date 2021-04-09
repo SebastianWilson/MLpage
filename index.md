@@ -85,7 +85,7 @@ Besides these 3 features, we are planning to add “average close price in the p
 
 **Clustering Analysis**
 
-We 
+We primarily investigated whether it is possible to cluster trading metrics of individual companies at different points in time. In other words, we were looking to see if we could classify time periods into distinct classes. We first created a Gaussian Mixture Model (GMM) to over data points (which, for our dataset, consisted of a **date**, **opening price**, **daily high**, **daily low, **closing price**, and **trading volume**. We discarded the OpenInt feature because it was mostly zeros). Before processing the data, we standardized all features (ie. made their standard deviations = 1 and their means = 0) to optimize the peformance of PCA and our clustering algorithms. 
 
 **Discussion**
 
