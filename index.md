@@ -45,11 +45,11 @@ Having trouble with Pages? Check out our [documentation](https://docs.github.com
 
 **Introduction/Background**
 
-Our group's area of research is **trading/investments**. We intend to apply various machine learning techniques to examine the correlation between stock performance by market, season, and time period. Through this, we hope to be able to predict various market variables using past trends.
+Our group's area of research is **financial market analysis**. We intend to apply various machine learning techniques to understand the factors that underlie stock performance by market, season, and time period. Through this, we hope to be able to predict various market variables using past trends.
 
 **Problem Definition**
 
-We are using the Historical Stock Market Dataset to identify trends in "historical daily prices and volume information for US stocks and ETFs trading on NASDAQ, NYSE, and NYSE MKT" with an eye towards long term predictions. We want to make predictions based on our identification of these trends.
+We are using the Historical Stock Market Dataset to identify trends in "historical daily prices and volume information for US stocks and ETFs trading on NASDAQ, NYSE, and NYSE MKT" with an eye towards long term predictions.
 
 **Methods**
 
