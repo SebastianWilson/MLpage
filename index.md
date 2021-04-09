@@ -70,6 +70,19 @@ As a result, the final classification result is formed, and the classification r
 
 We intend to use this technique to find correlations between the opening price, volume, closing price, daily high, and daily low. We could also find correlations between these variables for ETFs and stocks, as well as between different markets. For instance, this would tell us whether there is a correlation between ETFs traded on the NASDAQ and stocks traded on the NYSE. We could then analyze whether there exist correlations between different candlestick pattern clusters obtained through agglomerative clustering analysis. For instance, this could tell us if a highly volatile market is usually associated with a downturn. 
 
+Our results can be summarized as follows:
+
+![image](https://user-images.githubusercontent.com/82196613/114130128-e903f380-98cd-11eb-918b-3b218c9889e3.png)
+
+The close price of a specific stock is predicted in this linear regression model. We obtained the data from a historical stock database. In the original data set, we have open price, highest price, close price, volume. There is no missing data or null values in the dataset so there is no need to do data cleaning. The close price in the dataset is considered to be the y in this model. And 3 columns are used to form the features used in the training and predicting. 
+
+3 features are used for the training: 
+high-low-percentage-change: the percentage change of highest and lowest prices, calculated as (high-low)/low. Highest price and lowest price is very important in analyzing the behavior of a stock. We can observe the potential of the stock through the highest and lowest prices. Converting the highest and lowest price into a percentage change acts like a “normalization” step.
+volume of the stock:  Trading volume can help an investor identify momentum in a security and confirm a trend. Study shows that there is a positive correlation between volume and stock price.
+open price: open price is the start point in a day. Thus it acts like a base and has a great effect on the close price.
+Besides these 3 features, we are planning to add “average close price in the past 5 days” to take the long-term effect into consideration. This feature is likely to reflect the overall trending of the stock in 5 trading days. Stock prices are time series data but linear regression models do not have long term memory. Thus adding this feature can make up for this flaw to some extent. 
+
+
 **Discussion**
 
 There are many variables at play which need to be tweaked to perfection which may be a major hurdle in finding the right patterns. There are also many other variables that can be taken into account in the future such as weather, seasonal trends, and any major events which could heavily impact the market. We hope to find some patterns which could help analysts predict the state of the market. The advantage of using machine learning is being able to go through a large number of data and catch patterns which may not be easily seen by a human eye.
