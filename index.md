@@ -4,7 +4,7 @@
 
 **Introduction/Background**
 
-Our group's area of research is **financial market analysis**. We intend to apply various machine learning techniques to understand the factors that underlie stock performance by market, season, and time period. Through this, we hope to be able to predict various market variables using past trends alone.
+Our group's area of research is **financial market analysis**. We intend to apply various machine learning techniques to identify and understand the factors that underlie asset performance, for instance, time period, trading volume, and the performance of related assets. Through this, we hope to be able to predict various market variables using past trends alone.
 
 **Problem Definition**
 
