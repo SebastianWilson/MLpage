@@ -137,47 +137,84 @@ Besides these 3 features, we are planning to add “average close price in the p
 
 The goal of clustering analysis is to find out whether there are certain attractor states that individual companies or the market at large tends to fluctuate between. We did this by examining the natural features of our dataset as well as the various engineered features. We analyzed this by looking at how features vary over time, rather than across data points.
 
-We primarily investigated whether it is possible to cluster trading metrics of individual companies at different points in time. In other words, we were looking to see if we could classify time periods into distinct classes. We first created a Gaussian Mixture Model (GMM) to over data points (which, for our dataset, consisted of a **date**, **opening price**, **daily high**, **daily low**, **closing price**, and **trading volume**. We discarded the OpenInt feature because it was mostly zeros). Before processing the data, we standardized all features (ie. made their standard deviations = 1 and their means = 0) to optimize the peformance of PCA and our clustering algorithms.
-
+We primarily investigated whether it is possible to cluster trading metrics of individual companies at different points in time. In other words, we were looking to see if we could classify time periods into distinct classes. We first created a Gaussian Mixture Model (GMM) to over data points (which, for our dataset, consisted of a date, opening price, daily high, daily low, closing price, and trading volume. We discarded the OpenInt feature because it was mostly zeros). Before processing the data, we standardized all features (ie. made their standard deviations = 1 and their means = 0) to optimize the performance of PCA and our clustering algorithms.
 For our preliminary analysis, we examined a single stock - Agilent Technologies (stock A). We first used k-means to determine whether it was even possible to cluster our data meaningfully over time. Using the elbow method, checking up to k=100, we found that there did indeed seem to be a distinct number of clusters, with the “bend” occurring around k=7. There were three possible reasons for this:
-This was an idiosyncrasy of stock A, and you couldn’t, in general, classify time periods of market patterns.
-Stock A was following larger market trends (which consist of distinct “periods” of different combinations of feature states like “high volume, high growth”, “low volume, high growth”, and so on.)
-Individual companies, rather than the market at large, shuffle through these attractor states independently.
-The second hypothesis is the strongest among these - not only would we have to find distinct states of individual companies, but we would have to show that these states are correlated across different companies.
-Shown below are the sum of squared error (within cluster) values for k’s up to 100. Note the location of the bend.
 
+1. This was an idiosyncrasy of stock A, and you couldn’t, in general, classify time periods of market patterns.
+2. Stock A was following larger market trends (which consist of distinct “periods” of different combinations of feature states like “high volume, high growth”, “low volume, high growth”, and so on.)
+3. Individual companies, rather than the market at large, shuffle through these attractor states independently.
+
+The second hypothesis is the strongest among these - not only would we have to find distinct states of individual companies, but we would have to show that these states are correlated across different companies.
+Shown below are the sum of squared error values for k’s (within cluster) up to 100. Note the location of the bend.
+
+![image](https://user-images.githubusercontent.com/82196613/114153647-89b5db80-98ed-11eb-9418-d9025dcd7572.png)
 
 And here are the clusters visualized when k=7.
 
+![image](https://user-images.githubusercontent.com/82196613/114153702-9a665180-98ed-11eb-9561-35c6d060b844.png)
+
 Compare this to the clustering for k=5, 6, 8, and 8 respectively.
+
+![image](https://user-images.githubusercontent.com/82196613/114153753-a8b46d80-98ed-11eb-9e81-9c014e282696.png)
+
+![image](https://user-images.githubusercontent.com/82196613/114153787-b36f0280-98ed-11eb-9a8c-c19e2c8d6b6a.png)
+
+![image](https://user-images.githubusercontent.com/82196613/114153830-bec22e00-98ed-11eb-8f4e-5c44f2b5fdce.png)
 
 Notice how much more the distinct the boundaries are between states clusters when comparing opening price to time. Since we speculated that opening price would be highly correlated with closing price, daily, high, and daily low, we only plotted opening price to proxy these other features. We can also observe how clusters appear when plotting volume.
 Shown below are visualizations for k=6, 7, and 8 respectively when plotting volume instead of opening price.
 
+![image](https://user-images.githubusercontent.com/82196613/114153869-cd104a00-98ed-11eb-9e87-5b6632acae0a.png)
 
+![image](https://user-images.githubusercontent.com/82196613/114153908-d7cadf00-98ed-11eb-91c1-c9de374c65f5.png)
+
+![image](https://user-images.githubusercontent.com/82196613/114153950-e2857400-98ed-11eb-8537-b5c86349c111.png)
 
 
 Once again, notice how sharp the boundaries between clusters are when k=7.
 We applied this same method of analysis to a sample ETF - AdvisorShares Dorsey Wright (AADR) - to determine if this pattern holds for ETFs (which would indicate that asset metrics are being determined by the market at large.)
 
 Shown below are the sum of squared error (within cluster) values for k’s up to 100. 
+
+![image](https://user-images.githubusercontent.com/82196613/114154017-f4671700-98ed-11eb-9ee3-56d4f283b72f.png)
+
+
 From these, we determined k=5 to be best. The corresponding scatterplot is shown below.
+
+![image](https://user-images.githubusercontent.com/82196613/114154067-00eb6f80-98ee-11eb-9be8-7989417d89db.png)
 
 
 Now, let’s observe what happened for the time vs. volume plot when k=5. The clusters are more diffused across time.
 
+![image](https://user-images.githubusercontent.com/82196613/114154109-0d6fc800-98ee-11eb-9573-b1567da0038b.png)
+
+
 This gives more insight into what might have occurred. In particular, the reason why the clusters seem to overlap in time is because days with low trading volume were interspersed with days with very large trading volumes. In fact, when we reduce the number of clusters to 2, this becomes the primary distinction between clusters. The plot for k=2 is shown below.
+
+![image](https://user-images.githubusercontent.com/82196613/114154200-21b3c500-98ee-11eb-8566-0f4bc0f527b6.png)
 
 
 For the most part, this plot shows less distinct clustering along the time axis than we did for the stock A, and more volatility in trading volume. We only see distinct clustering toward the right side of the plot, where there seems to be less market volatility. 
 So far, we have only examined the raw data of two assets. Before moving on to sampling different assets, we will make sure we haven’t overlooked any other possible patterns in the data. One possible oversight is that we may be including many redundant features in our clustering analysis. As mentioned before, it appears that the price and volume are the latent variables driving the variance in data. Therefore, we will perform PCA to reduce the number of dimensions to 2. This has the convenient side effect of being easily visualizable.
 We first apply PCA to stock A. Using the elbow method, we find the best k to be somewhere from 13 to 16. The bend is now more pronounced. 
+
+![image](https://user-images.githubusercontent.com/82196613/114154309-40b25700-98ee-11eb-94d5-ad330bf1aa41.png)
+
 Here is the plot for k=13
+
+![image](https://user-images.githubusercontent.com/82196613/114154353-4d36af80-98ee-11eb-8be7-b144430db4fe.png)
+
 
 Notice how the data seems to be oriented diagonally. This is likely the orientation of the original time axis. When we see overlapping data, this is because those data have been broken into upper and lower clusters. Presumably, these new features have something to do with volume and price. Compare to the plot for k=7, which we found to neatly separate clusters along the time axis.
 
+![image](https://user-images.githubusercontent.com/82196613/114154378-57f14480-98ee-11eb-9d6e-274e74a11ba2.png)
+
+
 This data implies that there aren’t distinct attractor states - otherwise we would be seeing at least two different loci of clustering when reducing to principal components. Does this hold for ETFs and other stocks?
 For our sample ETF, AADR, an interesting pattern emerges. While there are two distinct masses of points, there seems to be a dense mass within a larger, sparser mass. Here is the plot when k=2 to illustrate this.
+
+![image](https://user-images.githubusercontent.com/82196613/114154434-67708d80-98ee-11eb-95a1-037375ea2bcc.png)
+
 
 The dense region, once again, is likely time. However, many points stray far away from the dense region, and where they do, they seem to be fairly evenly spread out. This implies that there are two attractor states for ETFs (at least the AADR ETF): very low price or trading volume or essentially randomized price + trading volume. As demonstrated by Figure X, this effect is likely driven entirely by trading volume. Further investigations will seek to correlate these two categories of ETF states with other financial metrics. Contrast this with stocks, which had less volatile trading volume. Therefore, time was a relatively greater source of variance for stocks, leading to clustering to occur along the time axis. 
 
@@ -185,86 +222,55 @@ Another possible confounder is our initial inclusion of time when clustering. Af
 Here are a few examples of other assets clusters when time is removed and we perform dimensionality reduction (k=2 for each):
 
 
-aa
+AA - stock
+
+![image](https://user-images.githubusercontent.com/82196613/114154475-71928c00-98ee-11eb-94cd-c9596f6b461c.png)
 
 
+AABA - stock
+
+![image](https://user-images.githubusercontent.com/82196613/114154544-853df280-98ee-11eb-8e5d-aa292f19adb1.png)
 
 
+AAAP - stock
+
+![image](https://user-images.githubusercontent.com/82196613/114154601-9424a500-98ee-11eb-8cfa-377fc7fdeb52.png)
 
 
+AAXJ - ETF
+
+![image](https://user-images.githubusercontent.com/82196613/114154713-b3233700-98ee-11eb-94c1-e2b44189fada.png)
 
 
+ACIM - ETF
+
+![image](https://user-images.githubusercontent.com/82196613/114154759-c1715300-98ee-11eb-88e3-1f0063c938b5.png)
 
 
+ACTX - ETF
 
-
-aaba
-
-
-
-
-
-
-
-
-
-
-
-
-
-aaap
-
-
-
-
-
-
-
-
-
-
-
-aaxj
-
-
-
-
-
-
-
-
-
-
-
-
-acim
-
-
-
-
-
-
-
-
-
-
-
-
-
-actx
+![image](https://user-images.githubusercontent.com/82196613/114154833-d3eb8c80-98ee-11eb-8e00-b4d2035d0dac.png)
 
 
 It appears that some assets seem to have certain attractor states. Particularly, the stock AA seems to have a random feature 1 + middling feature 2 attractor state and a random feature 2 + low feature 1 attractor state. More interestingly, different assets seem to have a negative or positive correlation between feature 1 and feature 2. Once again, these are presumably proxies for price and volume. In the next stage of clustering analysis, we will try to find clusters of assets according to whether there is a negative or positive correlation between features, and we will attempt to see if these clusters map onto other patterns we find. 
 We finally attempted to apply dimensionality reduction and then GMM to the rates of change of different features. We did this by constructing an array of the differences between subsequent points in time. In nearly all cases, the data was spread in approximately this fashion:
 
+![image](https://user-images.githubusercontent.com/82196613/114154894-e5349900-98ee-11eb-937f-fc1a49c3e86f.png)
+
+
 When you remove time, the spread changes to look like this:
+
+![image](https://user-images.githubusercontent.com/82196613/114154935-eebe0100-98ee-11eb-9f0d-da7baa42b49f.png)
+
 
 Neither of these plots were especially illuminating. However, patterns of rates of change remain a potential topic for future investigation.
 
-Clustering analysis has yielded two main takeaways:
+Clustering analysis has yielded three main takeaways:
 There are attractor states that different assets tend to settle into. For instance, many days involve a trading volume of 0, while others have randomly distributed trading volume. If we can cluster days with low trading volume and remove them from our dataset, this could yield higher fidelity results in later analyses. Further cross-data-point analysis needs to be conducted to determine whether there are differences between ETF and stock behavior.
 Dense clusters at the core of a plot tend to have a negative or positive correlation relative to the principal axes. This possibly gives another way in which to classify objects.
+Classifying data by time period is difficult (ideally to identify patterns of overall market behavior) is difficult using only clustering analysis.
 Ultimately, the main reason for looking for trends over time is to be able to compare time series behavior between different assets. Clustering analysis is suggestive of many patterns and ways of categorizing behavior at different points in time, but the main benefit of the takeaways is that they give another way of comparing assets. Further clustering analysis will focus on finding clusters of assets rather than asset states.
+
 
 
 **Discussion**
