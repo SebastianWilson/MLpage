@@ -92,9 +92,9 @@ Three features are used for the training:
 
 Besides these 3 features, we are planning to add “average close price in the past 5 days” to take the long-term effect into consideration. This feature is likely to reflect the overall trending of the stock in 5 trading days. Stock prices are time series data but linear regression models do not have long term memory. Thus adding this feature can make up for this flaw to some extent. 
 
-**Clustering Analysis**
+**Further Clustering Analysis**
 
-The goal of clustering analysis is to find out whether there are certain attractor states that individual companies or the market at large tends to fluctuate between. We did this by examining the natural features of our dataset as well as the various engineered features. We analyzed this by looking at how features vary over time, rather than across data points.
+The goal of clustering analysis in this section is to find out whether there are certain attractor states that individual companies or the market at large tends to fluctuate between. We did this by examining the natural features of our dataset as well as the various engineered features. We analyzed this by looking at how features vary over time, rather than across data points.
 
 We primarily investigated whether it is possible to cluster trading metrics of individual companies at different points in time. In other words, we were looking to see if we could classify time periods into distinct classes. We first created a Gaussian Mixture Model (GMM) to over data points (which, for our dataset, consisted of a date, opening price, daily high, daily low, closing price, and trading volume. We discarded the OpenInt feature because it was mostly zeros). Before processing the data, we standardized all features (ie. made their standard deviations = 1 and their means = 0) to optimize the performance of PCA and our clustering algorithms.
 For our preliminary analysis, we examined a single stock - Agilent Technologies (stock A). We first used k-means to determine whether it was even possible to cluster our data meaningfully over time. Using the elbow method, checking up to k=100, we found that there did indeed seem to be a distinct number of clusters, with the “bend” occurring around k=7. There were three possible reasons for this:
