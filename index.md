@@ -61,6 +61,9 @@ This dataset still needs to be processed so we can represent multiple days’ wo
          4  1.000000  0.791500  0.805500  1.014024  ...  1.081784 -2.110000  0.740001    0.0
 
 With the dataset finalized, we can apply the agglomerative hierarchical clustering algorithm using the euclidean distance formula to form our dendrogram.
+
+![Figure 1](https://cdn.discordapp.com/attachments/836397263197700126/836397991493238845/unknown.png)
+
 We can now query this structure to find patterns which are similar to each other and result in the same outcome (direction of the market after pattern). To find the direction of the market after any given pattern we can simply check the next day’s midpoint in comparison to the last candlestick in the pattern using the finalized dataframe. 
 
 Using a tree structure we associated each sub-dendrogram (cluster) with its corresponding patterns and the reliability of the outcomes(# patterns with the same outcome / total # of patterns in the cluster). Now, given a new pattern, we find the most similar pattern in our dataframe and check to see if it is associated with any clusters that have a high reliability. It is also important to consider the amount of patterns in the sub-dendrogram since dendrograms with high reliability and low number of patterns may still not be accurate. 
@@ -68,12 +71,11 @@ Using a tree structure we associated each sub-dendrogram (cluster) with its corr
 Using the first 1000 patterns for the AHC we find that there are 3 clusters that have over 70% reliability and 30+ associated patterns. 
 For further testing, we took the next 900 data points and searched for clusters with similar patterns associated with 70%+ reliability and 15+ associated patterns. Out of 900 there were 7 such instances. In these instances the algorithm correctly predicted the direction of the mark 85% of the times. 
 
+This scatterplot shows the accuracy rate of our AI for 30 stocks. Looking at the scatterplot, the prediction rate is not high enough to base any real investments off of. However, this AI can be used by analysts as a supplementary tool for their analysis. Depending on how accurately the algorithm performs for a certain stock, we can tell if the stock tends to follow similar patterns as it did in the past. With the stock that has 70% accuracy, it is safe to say that it does tend to follow similar patterns whereas the stock that has 40% accuracy can be seen as more volatile. There are also clear outliers near stocks in which many patterns could not be detected. If the stock has high accuracy and more detected patterns, it is a more reliable stock. The analysts can leverage these numbers and include larger datasets to help them predict the outcome of the market for any particular stock.
+
+![Figure 1](https://cdn.discordapp.com/attachments/836397263197700126/836692536877121556/unknown.png)
+
 There are many variables at play and plenty of room for optimization. Moving forward we would like to take Volume into account with the other metrics. We will also optimize the reliability and number of patterns required for the cluster to marked as a valid candidate to make predictions.
-
-**Neural nets methods**
-
-We are planning to study the performance using a typical neural network called LSMT (long short-term memory). The LSTM model is a type of recurrent neural network, which can theoretically store an unlimited amount of time information. This kind of network can not only process single data points, but also entire sequences of data. This attribute makes it a good choice when we are doing time-series predictions. The multi-layer long and short memory neural network is used as a base classifier, the data set is divided into multiple sub-data using self-sampling method set, use the sub-data set to train the base classifier, and integrate the classification of the base classifier.
-As a result, the final classification result is formed, and the classification result is the fluctuation of the next trading day.
 
 
 **Regression analysis**
@@ -92,6 +94,104 @@ Three features are used for the training:
 3. open price: open price is the start point in a day. Thus it acts like a base and has a great effect on the close price.
 
 Besides these 3 features, we are planning to add “average close price in the past 5 days” to take the long-term effect into consideration. This feature is likely to reflect the overall trending of the stock in 5 trading days. Stock prices are time series data but linear regression models do not have long term memory. Thus adding this feature can make up for this flaw to some extent. 
+
+
+
+**Clustering by Correlation Coefficients**
+
+
+In this section, we attempt to group assets according to their correlation with other assets over time. Whereas candlestick analysis aimed to make predictions, this section will focus on understanding the structure of the market.
+
+We started by making the following modifications to the data: 1) We took a subset of the stocks in the dataset 2) We computed the moving average at every point in time (ie. we applied a kernel of 1’s) to smooth out noise. 3) We computed the deltas for each feature other than time. We then divided these deltas by the values at the previous timestep. This gave us an approximation of the instantaneous percent change in stock variables. 4) We standardized the values we obtained. 
+We are mainly interested in finding patterns in stock prices. Therefore, in this section, we will ignore all features except for price and time. The first thing we did was test out what happens when you compare the prices of two different stocks at different points in time. In the plot below, we find that there is a weakly positive correlation between percentage price increases in two randomly selected stocks. Note that each data point represents the average price of each stock over an arbitrary ten day period. 
+
+![image](https://user-images.githubusercontent.com/82196613/116378528-38a85180-a7e0-11eb-863a-6a0bf7865e1b.png)
+
+
+This finding motivated this section’s central question: Do certain stocks predictably “behave” similarly to other stocks? And if so, can we find groups of similarly behaving stocks? This question is of particular relevance to hedging. For instance, if you wanted to reduce your risk in the market, you could simply buy stocks whose prices are negatively correlated so that your overall wins and losses will tend to balance out. We find that stock prices, despite being locally volatile, strongly correlated with certain other stock prices, even on short timescales. The below chart shows the correlation coefficients between each pair of stocks in a ten-stock sample. Once again, we are using the average price over periods of ten days.
+
+![image](https://user-images.githubusercontent.com/82196613/116378773-6beae080-a7e0-11eb-9bef-141a894baa36.png)
+
+
+ 
+Clearly, it is not uncommon for stock prices to be entangled with one another. However, it remains to be seen whether this results in larger groupings. We can cluster stocks based on a matrix of correlation coefficients by using agglomerative clustering. This allows us to reorder the rows and columns in the matrix until distinct blocks of highly correlated stocks emerge. A visualization of this is given below:
+
+![image](https://user-images.githubusercontent.com/82196613/116378828-7ad19300-a7e0-11eb-8dc7-0c89a900f3a0.png)
+
+
+![image](https://user-images.githubusercontent.com/82196613/116378863-81f8a100-a7e0-11eb-9e22-be16f76f1335.png)
+
+
+![image](https://user-images.githubusercontent.com/82196613/116378907-8ae97280-a7e0-11eb-9b94-3f8c762d86e7.png)
+
+
+Source: https://scikit-learn.org/stable/auto_examples/bicluster/plot_spectral_coclustering.html
+Shown below is a correlation coefficient heatmap for 142 stocks:
+
+![image](https://user-images.githubusercontent.com/82196613/116379171-c08e5b80-a7e0-11eb-948f-913e8f71670e.png)
+
+
+
+Note that this heatmap is currently unsorted. Once we use agglomerative clustering to obtain a linkage structure, we will be able to place children of the same node next to one another in the matrix. 
+We have several distance metrics to choose from when performing agglomerative clustering: single, complete, average, weighted, centroid, and ward. We tested each of these on our sample. We are looking for distinct squares along the diagonal. We found that most metrics did not yield good results. The best performing distance metrics were ‘complete’ and ‘ward’. To illustrate this, consider the difference between centroid and ward with kernel size (for the moving average) equal to 10:
+
+![image](https://user-images.githubusercontent.com/82196613/116379269-d9970c80-a7e0-11eb-8ade-639181a7184a.png)
+
+
+Figure 1: centroid matrix
+
+![image](https://user-images.githubusercontent.com/82196613/116379397-f4698100-a7e0-11eb-8594-3ecd5a6d6330.png)
+
+
+Above: ward
+After testing out various values of our hyperparameters (sample size, kernel size, and distance metric), we obtained this matrix: 
+
+![image](https://user-images.githubusercontent.com/82196613/116379472-0814e780-a7e1-11eb-95e0-76d5326a1da0.png)
+
+
+Figure 2: sorted correlation matrix. Complete linkage. Kernel size = 30. Sample size = 142
+In this visualization, we see a large green square in the upper lefthand corner. The stocks at each row and column (note that rows and columns are symmetrical in this diagram) that map to areas in the green square are correlated with other members of the square and less correlated with those outside of it. In fact, it appears that some “patches” are distinctly red, implying that their cluster of stocks is negatively correlated with another cluster of stocks. This tells us that there are distinct groups of stocks whose behavior gives us information about the behavior of other groups of stocks. This may map onto the notion of an industry - however, it is unlikely that the hard, man-made categorizations of industries alone can capture the statistical complexity demonstrated in this matrix. 
+Several other matrices showed similar patterns of clustering. Note that the positions of the squares can change from matrix to matrix since the ordering is randomized. 
+
+![image](https://user-images.githubusercontent.com/82196613/116379536-18c55d80-a7e1-11eb-8068-cf32b8fbe039.png)
+
+
+Above: sorted correlation matrix, complete, kernel size = 1, sample size = 149
+
+![image](https://user-images.githubusercontent.com/82196613/116379593-2844a680-a7e1-11eb-9826-afbd397d955a.png)
+
+
+Above: ward, kernel size = 1, sample size = 149
+After making the matrices, we made the corresponding dendrograms. These dendrograms give us the distances between different stocks as well as their cluster membership. The dendrogram corresponding to the figure 1 is shown below:
+
+![image](https://user-images.githubusercontent.com/82196613/116379661-3abee000-a7e1-11eb-84ec-e07582c964f9.png)
+
+
+Compare this to the dendrogram for the matrix using centroid, kernel = 1, and sample size 149. Visually, this matrix did not produce a pattern. Its dendrogram is very imbalanced at all levels. 
+
+![image](https://user-images.githubusercontent.com/82196613/116379713-49a59280-a7e1-11eb-8f18-f1842b485b84.png)
+
+
+Clearly, the method used to obtain the clustering can lead to very different results and performance. It is therefore likely that the actual boundaries between the cluster squares should look much more distinct than what was shown here. Hinting at this is the fact that we can obtain a correlation matrix of this quality for volume:
+
+![image](https://user-images.githubusercontent.com/82196613/116379776-575b1800-a7e1-11eb-8c2c-8634cbb331bd.png)
+
+
+The corresponding dendrogram is shown below: 
+
+![image](https://user-images.githubusercontent.com/82196613/116379885-72c62300-a7e1-11eb-8920-b98a50ee8ef7.png)
+
+
+This brings an interesting question to the forefront: how are volume and price related? To investigate this, we used regression analysis. 
+In order to numerically test our hypothesis, we experimentally measured the goodness of our intragroup correlation coefficient matrices. Using the clustering and hyperparameters in figure 1, and making a cut in the dendrogram resulting in 6 groups, we produced a table that tells us the following (in this order): 1) the cluster number, 2) the average correlation coefficient between members of this cluster, and 3) the average correlation coefficient between members of a randomly chosen cluster of equal size. This gives us an experimental benchmark.
+
+![image](https://user-images.githubusercontent.com/82196613/116379966-896c7a00-a7e1-11eb-9155-3b591202a6c9.png)
+
+
+The results show that intracluster correlation is much higher for clusters produced by hierarchical clustering than for randomly generated clusters.
+
+
+
 
 **Further Clustering Analysis**
 
@@ -267,6 +367,12 @@ Ultimately, the main reason for looking for trends over time is to be able to co
 **Discussion**
 
 There are many variables at play which need to be tweaked to perfection which may be a major hurdle in finding the right patterns. There are also many other variables that can be taken into account in the future such as weather, seasonal trends, and any major events which could heavily impact the market. We hope to find some patterns which could help analysts predict the state of the market. The advantage of using machine learning is being able to go through a large number of data and catch patterns which may not be easily seen by a human eye.
+
+
+**Conclusion**
+
+With the Agglomerative Hierarchical Clustering method, we were able to find 3 clusters that had 70%+ reliability and 30+ associated patterns. Although this is a good rate, due to the absence of volume variable in our method, we weren't able to reliably predict any real investment. However, analysts could use this data as a supplement to analyses. Moving forward, we hope to add volume to our method, which will help us predict future trend better.
+
 
 **References**
 
